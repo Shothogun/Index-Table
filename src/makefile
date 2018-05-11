@@ -15,7 +15,7 @@ DEPS = $(wildcard $(IDIR)/*.hpp)
 _OBJ = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-$(ODIR)/%.o: %.cc $(DEPS)
+$(ODIR)/%.o: %.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CXXFLAGS) $(DEBUG)
 
 main: $(OBJ)
