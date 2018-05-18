@@ -4,6 +4,45 @@
 
 using namespace std;
 
+inverted_list::inverted_list()
+{
+	secondary_key_file.head = NULL;
+	label_id_file.head = NULL;
+
+}
+
+inverted_list::~inverted_list()
+{
+	delete_secondary_key_file(secondary_key_file.head);
+	delete_label_id_file(label_id_file.head);	
+}
+
+void inverted_list::delete_secondary_key_file(secondary_key_pointer node)
+{
+	if (node != NULL)
+	{
+		delete_secondary_key_file(node->next);
+		delete node;
+	}
+}
+
+void inverted_list::delete_label_id_file(label_id_pointer node)
+{
+	if (node != NULL)
+	{
+		delete_label_id_file(node->next);
+		delete node;
+	}
+}
+
+/*
+inverted_list::insert_data(student_data data)
+{
+
+}
+
+*/
+
 string concatenate_line(string line, string line_ws)
 {
 	// Key's size 
