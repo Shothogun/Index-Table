@@ -35,15 +35,21 @@ void inverted_list::delete_label_id_file(label_id_pointer node)
 	}
 }
 
+
 /*
-inverted_list::insert_data(student_data data)
+void inverted_list::insert_data(student_data data)
 {
+	if(head == NULL)
+	{
+		head = new node;
+
+	}
+
 
 }
-
 */
 
-string concatenate_line(string line, string line_ws)
+string primary_key_creator(string line, string line_ws)
 {
 	// Key's size 
 	const int key_info = 30;
@@ -79,7 +85,7 @@ string concatenate_line(string line, string line_ws)
 	return line_ws;
 }
 
-int primary_index_creator(string file_name)
+int primary_index_file_creator(string file_name)
 {
 
 	// Original database file
@@ -102,7 +108,7 @@ int primary_index_creator(string file_name)
 
 	while(getline(database, line))
 	{
-		line_ws = concatenate_line(line,line_ws);
+		line_ws = primary_key_creator(line,line_ws);
 
 		primary_index << line_ws << " ";
 

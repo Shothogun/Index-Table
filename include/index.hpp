@@ -54,7 +54,7 @@ class inverted_list
 	public:
 		inverted_list();
 		~inverted_list();
-		int insert_data(student_data data);
+		//int insert_data(student_data data);
 		//int remove_data();
 		//int update_data();
 
@@ -69,8 +69,8 @@ class inverted_list
 		label_id_index_file label_id_file;
 };
 
-int primary_index_creator(string file_name);
-string concatenate_line(string line, string line_ws);
+int primary_index_file_creator(string file_name);
+string primary_key_creator(string line, string line_ws);
 
 
 
