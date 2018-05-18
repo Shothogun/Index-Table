@@ -1,15 +1,13 @@
 #include "index.hpp"
 #include <iostream>
 #include <fstream>
-#include <regex>
-#include <ctype.h>
 
 using namespace std;
 
 string concatenate_line(string line, string line_ws)
 {
 	// Key's size 
-	const int key_info = 30;	
+	const int key_info = 30;
 
 	/* Size is a variable related to the size of the line array that is being
 		filled in the concatenate function.
