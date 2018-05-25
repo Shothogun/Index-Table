@@ -87,6 +87,26 @@ string primary_key_creator(string line, string line_ws)
 
 int primary_index_file_creator(string file_name)
 {
+	string name = "indices_";
+	string identifier = file_name;
+	string extension = ".ind";
+
+	int counter=0;
+
+	// Get the last character of the name, without the extension of normaly 4 characters
+	while (counter < 4)
+	{
+		identifier.pop_back();
+
+		counter ++;
+	}
+	identifier = identifier.back();
+
+	// Name of the generated file
+	name += identifier + extension;
+
+	// Identifies that the current line is a header
+	const char header_indicator = '#';
 
 	// Original database file
 	ifstream database;
@@ -104,10 +124,17 @@ int primary_index_file_creator(string file_name)
 	int line_number = 0;				
 
 	database.open(file_name);
-	primary_index.open("saida.ind", ios::out | ios::trunc);
+	primary_index.open(name, ios::out | ios::trunc);
 
 	while(getline(database, line))
 	{
+		// Verifies if the line is the header of the archive
+		if (line[0] == header_indicator)
+		{
+			line_number++;
+			continue;
+		}
+		cout << "1";
 		line_ws = primary_key_creator(line,line_ws);
 
 		primary_index << line_ws << " ";
@@ -130,4 +157,48 @@ int primary_index_file_creator(string file_name)
 
 	return 1;
 
+}
+
+int file_header_creator (string file_name, string new_file_name)
+{
+	// Identifies that the current line is a header
+	const char header_indicator = '#';
+
+	int counter;
+
+	ifstream database;
+	ofstream new_database;
+
+	string tmp_register;
+
+	database.open(file_name);
+	new_database.open(new_file_name, ios::out | ios::trunc);
+
+	// Verify if the header already exists
+	if (database.get() == header_indicator)
+	{
+		return 1;
+	}
+		// Go to the beginning 
+	database.seekg(0, database.beg);
+
+	// Header
+	new_database << header_indicator;
+
+	for (counter = 0; counter < 3; counter++)
+	{
+		new_database << ' ';  
+	}
+	new_database << '\n';
+
+	// Copy the registers to the other file
+	while(getline(database,tmp_register))
+	{
+		new_database << tmp_register << "\n";
+	}
+
+	database.close();
+	new_database.close();
+
+	return 0;
 }
