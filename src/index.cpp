@@ -35,19 +35,55 @@ void inverted_list::delete_label_id_file(label_id_pointer node)
 	}
 }
 
-
-/*
 void inverted_list::insert_data(student_data data)
 {
-	if(head == NULL)
-	{
-		head = new node;
+	label_id_pointer node_label = new label_id_index_file_node;
+	secondary_key_pointer node_secondary_key = new secondary_key_index_file_node;
 
+	node_secondary_key->secondary_key = data.curso;
+
+	node_label->primary_key = data.matricula;
+	node_label->primary_key += data.nome;
+
+	if(node_label->primary_key.lenght() > 30)
+	{
+		node_label->primary_key.erase(node_secondary_key->secondary_key.begin()+29,
+																						node_secondary_key->secondary_key.end());
 	}
 
+	node_label->next = NULL;
+	node_secondary_key->next = NULL;
 
+	if( (label_id_file->head == NULL) != (secondary_key_file->head == NULL) )
+	{
+		cout << "ERROR(index.cpp:52)  Erro na contrução da estrutura" << endl;
+	}
+
+	else if(label_id_file->head == NULL && secondary_key_file->head == NULL)
+	{
+		// Secondary's key head and tail creation
+		label_id_file.head = node_label;
+		label_id_file.tail = node_label;
+		node_label = NULL;
+
+		// Secondary's key head and tail creation
+		secondary_key_file.head = node_secondary_key;
+		secondary_key_file.tail = node_secondary_key;
+		secondary_key_file.head->first = NULL;
+		node_secondary_key = NULL;
+	}
+
+	else 
+	{
+		/*
+		Insert a new secondary key value if it the input doesn't exist yet.
+		Else, updates the 
+			
+		*/
+		
+	}
 }
-*/
+
 
 string primary_key_creator(string line, string line_ws)
 {

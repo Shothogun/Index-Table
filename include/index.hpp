@@ -10,10 +10,10 @@ typedef struct label_id_index_file_node *label_id_pointer;
 typedef struct student_data
 {
 	string nome;
-	int matricula;
+	string matricula;
 	string curso;
 	string turma;
-	int OP;
+	string OP;
 
 } student_data;
 
@@ -22,6 +22,7 @@ typedef struct secondary_key_index_file_node
 {
 	string secondary_key;
 	secondary_key_pointer next;
+	label_id_pointer first;
 
 } secondary_key_index_file_node;
 
@@ -36,13 +37,13 @@ typedef struct label_id_index_file_node
 
 typedef struct secondary_key_index_file 
 {
-	secondary_key_pointer head;
+	secondary_key_pointer head, tail;
 
 } secondary_key_index_file;
 
 typedef struct label_id_index_file
 {
-	label_id_pointer head;
+	label_id_pointer head, tail;
 
 } label_id_index_file;
 
@@ -54,7 +55,7 @@ class inverted_list
 	public:
 		inverted_list();
 		~inverted_list();
-		//int insert_data(student_data data);
+		void insert_data(student_data data);
 		//int remove_data();
 		//int update_data();
 
