@@ -4,6 +4,19 @@
 
 using namespace std;
 
+
+/*
+
+A fazer:
+
+	-	Remover registro
+	-	Atualizar registro
+	- Merge de arquivos
+	- Passar o linked list em arquivo indice e arquivo principal(mem. principal em mem. secundaria)
+		- Vice-versa
+
+*/
+
 inverted_list::inverted_list()
 {
 	secondary_key_file.head = NULL;
