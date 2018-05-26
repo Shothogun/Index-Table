@@ -71,6 +71,7 @@ class inverted_list
 
 int primary_index_file_creator(string file_name);
 string primary_key_creator(string line, string line_ws);
+int file_header_creator (string file_name, string new_file_name);
 
 
 
