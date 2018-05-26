@@ -69,11 +69,6 @@ void inverted_list::insert_data(student_data data)
 																						input_node_secondary->secondary_key.end());
 	}
 
-	input_node_label->next = NULL;
-
-	input_node_secondary->next = NULL;
-
-
 	// Both head should be set NULL at the initial conditions
 	if( (label_id_file.head == NULL) != (secondary_key_file.head == NULL) )
 	{
@@ -84,15 +79,19 @@ void inverted_list::insert_data(student_data data)
 	else if(label_id_file.head == NULL && secondary_key_file.head == NULL)
 	{
 		// Secondary's key head and tail creation
+		input_node_label->brother = NULL;
 		label_id_file.head = input_node_label;
 		label_id_file.tail = input_node_label;
-		input_node_label = NULL;
+		label_id_file.head->next = NULL;
+		label_id_file.tail->next = NULL
 
 		// Secondary's key head and tail creation
+		input_node_secondary->first = NULL;
 		secondary_key_file.head = input_node_secondary;
 		secondary_key_file.tail = input_node_secondary;
-		secondary_key_file.head->first = NULL;
-		input_node_secondary = NULL;
+		secondary_key_file.head->next = NULL;
+		secondary_key_file.tail->next = NULL;
+
 	}
 
 

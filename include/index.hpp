@@ -38,15 +38,16 @@ typedef struct label_id_index_file_node
 
 	string primary_key;
 
+	// NRR in the data file
+
+	string NRR;
+	
 	// Next primary key in the label file
 	label_id_pointer next;
 
 	// Same secondary key primary key pointer
 	label_id_pointer brother;
 
-	// NRR in the data file
-
-	string NRR;
 	int id;
 
 } label_id_index_file_node;
