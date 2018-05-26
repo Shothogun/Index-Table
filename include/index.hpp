@@ -4,8 +4,8 @@
 #include <string>
 using namespace std;
 
-typedef struct secondary_key_index_file_node *secondary_key_pointer;
-typedef struct label_id_index_file_node *label_id_pointer;
+typedef struct secondary_key_index_list_node *secondary_key_pointer;
+typedef struct label_id_index_list_node *label_id_pointer;
 
 typedef struct student_data
 {
@@ -19,7 +19,7 @@ typedef struct student_data
 } student_data;
 
 
-typedef struct secondary_key_index_file_node
+typedef struct secondary_key_index_list_node
 {
 	string secondary_key;
 
@@ -31,9 +31,9 @@ typedef struct secondary_key_index_file_node
 
 	int id;
 
-} secondary_key_index_file_node;
+} secondary_key_index_list_node;
 
-typedef struct label_id_index_file_node
+typedef struct label_id_index_list_node
 {
 
 	string primary_key;
@@ -45,28 +45,28 @@ typedef struct label_id_index_file_node
 	// Next primary key in the label file
 	label_id_pointer next;
 
-	// Same secondary key primary key pointer
-	label_id_pointer brother;
+	// Same secondary key primary key list
+	label_id_pointer first;
 
 	int id;
 
-} label_id_index_file_node;
+} label_id_index_list_node;
 
 
 
-typedef struct secondary_key_index_file 
+typedef struct secondary_key_index_list 
 {
 	secondary_key_pointer head, tail;
 	int total;
 
-} secondary_key_index_file;
+} secondary_key_index_list;
 
-typedef struct label_id_index_file
+typedef struct label_id_index_list
 {
 	label_id_pointer head, tail;
 	int total;
 
-} label_id_index_file;
+} label_id_index_list;
 
 
 
@@ -82,11 +82,11 @@ class inverted_list
 
 	private:
 		void create_inverted_list();
-		void delete_secondary_key_file(secondary_key_pointer node);
-		void delete_label_id_file(label_id_pointer node);
+		void delete_secondary_key_list(secondary_key_pointer node);
+		void delete_label_id_list(label_id_pointer node);
 
-		secondary_key_index_file secondary_key_file;		
-		label_id_index_file label_id_file;
+		secondary_key_index_list secondary_key_list;		
+		label_id_index_list label_id_list;
 
 		// Indicates the data file name
 		string data_file;
