@@ -102,7 +102,34 @@ void inverted_list::insert_data(student_data data)
 		// There is a key like input
 		if (input_node_secondary->secondary_key.compare(current_secondary->secondary_key) == 0)
 		{
-			
+			label_id_pointer prev_label;
+			label_id_pointer current_label = label_id_file.head;
+
+			// Insert primary_key in the right position
+			while(input_node_label->primary_key.compare(current_label->primary_key) > 0
+						&& prev_label != label_id_file.tail)
+			{
+				prev_label = current_label;
+				current_label = prev_label->next;
+			} 
+
+			if(current_label == label_id_file.head)
+			{
+				input_node_label->next = label_id_file.head;
+				label_id_file.head = input_node_label;
+			}
+
+			else if(prev_label == label_id_file.tail)
+			{
+				label_id_file.tail->next = input_node_label;
+				label_id_file.tail = input_node_label;
+			}
+
+			else
+			{
+				prev_label->next = input_node_label;
+				input_node_label->next = current_label;
+			}
 		}
 
 		// If there isn't any key like input
