@@ -37,50 +37,102 @@ void inverted_list::delete_label_id_file(label_id_pointer node)
 
 void inverted_list::insert_data(student_data data)
 {
-	label_id_pointer node_label = new label_id_index_file_node;
-	secondary_key_pointer node_secondary_key = new secondary_key_index_file_node;
+	label_id_pointer input_node_label = new label_id_index_file_node;
+	secondary_key_pointer input_node_secondary = new secondary_key_index_file_node;
+	const int primary_key_length = 30;
 
-	node_secondary_key->secondary_key = data.curso;
+	input_node_secondary->secondary_key = data.curso;
 
-	node_label->primary_key = data.matricula;
-	node_label->primary_key += data.nome;
+	input_node_label->NRR = data.NRR;
+	input_node_label->primary_key = data.matricula;
+	input_node_label->primary_key += data.nome;
 
-	if(node_label->primary_key.lenght() > 30)
+
+	// Set the 30 characters primary key
+	if(input_node_label->primary_key.length() > primary_key_length)
 	{
-		node_label->primary_key.erase(node_secondary_key->secondary_key.begin()+29,
-																						node_secondary_key->secondary_key.end());
+		input_node_label->primary_key.erase(input_node_secondary->secondary_key.begin()+29,
+																						input_node_secondary->secondary_key.end());
 	}
 
-	node_label->next = NULL;
-	node_secondary_key->next = NULL;
+	input_node_label->next = NULL;
+	input_node_secondary->next = NULL;
 
-	if( (label_id_file->head == NULL) != (secondary_key_file->head == NULL) )
+
+	// Both head should be set NULL at the initial conditions
+	if( (label_id_file.head == NULL) != (secondary_key_file.head == NULL) )
 	{
 		cout << "ERROR(index.cpp:52)  Erro na contrução da estrutura" << endl;
 	}
 
-	else if(label_id_file->head == NULL && secondary_key_file->head == NULL)
+	// If the list is empty
+	else if(label_id_file.head == NULL && secondary_key_file.head == NULL)
 	{
 		// Secondary's key head and tail creation
-		label_id_file.head = node_label;
-		label_id_file.tail = node_label;
-		node_label = NULL;
+		label_id_file.head = input_node_label;
+		label_id_file.tail = input_node_label;
+		input_node_label = NULL;
 
 		// Secondary's key head and tail creation
-		secondary_key_file.head = node_secondary_key;
-		secondary_key_file.tail = node_secondary_key;
+		secondary_key_file.head = input_node_secondary;
+		secondary_key_file.tail = input_node_secondary;
 		secondary_key_file.head->first = NULL;
-		node_secondary_key = NULL;
+		input_node_secondary = NULL;
 	}
 
+	// List is not empty 
 	else 
 	{
 		/*
-		Insert a new secondary key value if it the input doesn't exist yet.
-		Else, updates the 
-			
+			Insert a new secondary key in the secondary key file
+			if it doesn't exist yet. Else, only the label id file is modified
 		*/
-		
+
+		secondary_key_pointer prev_secondary;
+		secondary_key_pointer current_secondary = secondary_key_file.head;
+
+
+		while(input_node_secondary->secondary_key.compare(current_secondary->secondary_key) > 0
+						&& prev_secondary != secondary_key_file.tail)
+		{
+			prev_secondary = current_secondary;
+			current_secondary = prev_secondary->next;
+		}
+
+		// There is a key like input
+		if (input_node_secondary->secondary_key.compare(current_secondary->secondary_key) == 0)
+		{
+			
+		}
+
+		// If there isn't any key like input
+		else
+		{
+			//Insert input node in the label id file
+			label_id_file.tail = input_node_label;
+			secondary_key_file.total++;
+
+			// It's the smallest
+			if(current_secondary == secondary_key_file.head)
+			{
+				input_node_secondary->next = secondary_key_file.head;
+				secondary_key_file.head = input_node_secondary;
+			}
+
+			// It's the greatest
+			else if(prev_secondary == secondary_key_file.tail)
+			{
+				secondary_key_file.tail->next = input_node_secondary;
+				secondary_key_file.tail = input_node_secondary;
+			}
+
+			// It's in the middle
+			else
+			{
+				prev_secondary->next = input_node_secondary;
+				input_node_secondary->next = current_secondary;
+			}
+		}
 	}
 }
 
