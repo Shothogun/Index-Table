@@ -97,6 +97,8 @@ void show_registers (string file_name)
 	registers.close();
 } // show_registers
 
+/*
+
 int get_register (string& formated_register)
 {
 	int bar_counter; // Conta quantas barras (/) foram localizadas na string.
@@ -143,3 +145,5 @@ void canonic_primary_key ()
 {
 
 }
+
+*/
