@@ -53,6 +53,7 @@ void inverted_list::insert_data(student_data data)
 	label_id_pointer input_node_label = new label_id_index_file_node;
 	secondary_key_pointer input_node_secondary = new secondary_key_index_file_node;
 	const int primary_key_length = 30;
+	label_id_file.total++;
 
 	input_node_secondary->secondary_key = data.curso;
 
@@ -69,6 +70,7 @@ void inverted_list::insert_data(student_data data)
 	}
 
 	input_node_label->next = NULL;
+
 	input_node_secondary->next = NULL;
 
 
@@ -93,87 +95,14 @@ void inverted_list::insert_data(student_data data)
 		input_node_secondary = NULL;
 	}
 
-	// List is not empty 
-	else 
-	{
-		/*
-			Insert a new secondary key in the secondary key file
-			if it doesn't exist yet. Else, only the label id file is modified
-		*/
 
-		secondary_key_pointer prev_secondary;
-		secondary_key_pointer current_secondary = secondary_key_file.head;
+}
+
+int inverted_list::remove_data(string input_primary_key, string input_secondary_key)
+{
 
 
-		while(input_node_secondary->secondary_key.compare(current_secondary->secondary_key) > 0
-						&& prev_secondary != secondary_key_file.tail)
-		{
-			prev_secondary = current_secondary;
-			current_secondary = prev_secondary->next;
-		}
 
-		// There is a key like input
-		if (input_node_secondary->secondary_key.compare(current_secondary->secondary_key) == 0)
-		{
-			label_id_pointer prev_label;
-			label_id_pointer current_label = label_id_file.head;
-
-			// Insert primary_key in the right position
-			while(input_node_label->primary_key.compare(current_label->primary_key) > 0
-						&& prev_label != label_id_file.tail)
-			{
-				prev_label = current_label;
-				current_label = prev_label->next;
-			} 
-
-			if(current_label == label_id_file.head)
-			{
-				input_node_label->next = label_id_file.head;
-				label_id_file.head = input_node_label;
-			}
-
-			else if(prev_label == label_id_file.tail)
-			{
-				label_id_file.tail->next = input_node_label;
-				label_id_file.tail = input_node_label;
-			}
-
-			else
-			{
-				prev_label->next = input_node_label;
-				input_node_label->next = current_label;
-			}
-		}
-
-		// If there isn't any key like input
-		else
-		{
-			//Insert input node in the label id file
-			label_id_file.tail = input_node_label;
-			secondary_key_file.total++;
-
-			// It's the smallest
-			if(current_secondary == secondary_key_file.head)
-			{
-				input_node_secondary->next = secondary_key_file.head;
-				secondary_key_file.head = input_node_secondary;
-			}
-
-			// It's the greatest
-			else if(prev_secondary == secondary_key_file.tail)
-			{
-				secondary_key_file.tail->next = input_node_secondary;
-				secondary_key_file.tail = input_node_secondary;
-			}
-
-			// It's in the middle
-			else
-			{
-				prev_secondary->next = input_node_secondary;
-				input_node_secondary->next = current_secondary;
-			}
-		}
-	}
 }
 
 
@@ -262,7 +191,7 @@ int primary_index_file_creator(string file_name)
 			line_number++;
 			continue;
 		}
-		cout << "1";
+
 		line_ws = primary_key_creator(line,line_ws);
 
 		primary_index << line_ws << " ";
