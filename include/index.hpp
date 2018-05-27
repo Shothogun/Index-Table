@@ -15,6 +15,7 @@ typedef struct student_data
 	string turma;
 	string OP;
 	string NRR;
+	string data_file;
 	
 } student_data;
 
@@ -28,8 +29,6 @@ typedef struct secondary_key_index_list_node
 
 	// First node in brothers label list(same secondary key)
 	label_id_pointer first;
-
-	int id;
 
 } secondary_key_index_list_node;
 
@@ -47,8 +46,6 @@ typedef struct label_id_index_list_node
 
 	// Same secondary key primary key list
 	label_id_pointer brother;
-
-	int id;
 
 } label_id_index_list_node;
 
@@ -78,6 +75,13 @@ class inverted_list
 		~inverted_list();
 		void insert_data(student_data data);
 		int remove_data(string input_primary_key, string input_secondary_key);
+		label_id_pointer get_head_label();
+		secondary_key_pointer get_head_secondary();
+		secondary_key_index_list get_secondary_key_list();
+		label_id_index_list get_label_id_list();
+		void set_data_file_title(string file_name);
+		string get_data_file_title();
+
 		//int update_data();
 
 	private:
@@ -90,7 +94,7 @@ class inverted_list
 		label_id_index_list label_id_list;
 
 		// Indicates the data file name
-		string data_file;
+		string data_file = "none";
 };
 
 int primary_index_file_creator(string file_name);

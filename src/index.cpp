@@ -65,8 +65,8 @@ void inverted_list::insert_data(student_data data)
 	// Set the 30 characters primary key
 	if(input_node_label->primary_key.length() > primary_key_length)
 	{
-		input_node_label->primary_key.erase(input_node_secondary->secondary_key.begin()+29,
-																						input_node_secondary->secondary_key.end());
+		input_node_label->primary_key.erase(input_node_label->primary_key.begin()+30,
+																						input_node_label->primary_key.end());
 	}
 
 	// Both head should be set NULL at the initial conditions
@@ -78,6 +78,7 @@ void inverted_list::insert_data(student_data data)
 	// If the list is empty
 	else if(label_id_list.head == NULL && secondary_key_list.head == NULL)
 	{
+
 		// Secondary's key head and tail creation
 		input_node_label->brother = NULL;
 		input_node_label->next = NULL;
@@ -147,7 +148,7 @@ void inverted_list::insert_data(student_data data)
 			else 
 			{
 				current_label->brother = input_node_label;
-				input_node_label = NULL;
+				input_node_label->brother = NULL;
 			}
 		}
 
@@ -156,7 +157,7 @@ void inverted_list::insert_data(student_data data)
 		{
 
 			// Set primary key
-			current_secondary->first = input_node_label;
+			input_node_secondary->first = input_node_label;
 			input_node_label->brother = NULL;
 
 			if(current_secondary == secondary_key_list.head)
@@ -172,31 +173,31 @@ void inverted_list::insert_data(student_data data)
 			}
 		}
 
-		// If the secondary key doesn't exist yet and is the greatest value fo the secondary key list 
+		// If the secondary key doesn't exist yet and is the greatest value of the secondary key list 
 		else if(current_secondary == secondary_key_list.tail)
 		{
 			// Set primary key
-
-			current_secondary->first = input_node_label;
+			input_node_secondary->first = input_node_label;
 			input_node_label->brother = NULL;
 
 			secondary_key_list.tail->next = input_node_secondary;
-			input_node_secondary->next = NULL;
 			secondary_key_list.tail = input_node_secondary;
+			input_node_secondary->next = NULL;
 		}
 
 		else
 		{
 
 			cout << "Erro(index.cpp:179) no processo de insercao" << endl;
-			return ;
+			return ;	
 		}
 
 
 		// Insert primary key in primary key file
 
 		label_id_list.tail->next = input_node_label;
-		label_id_list.tail = input_node_label;
+		input_node_label->next = NULL;
+		label_id_list.tail = input_node_label;		
 	}
 }
 
@@ -232,14 +233,14 @@ int inverted_list::remove_data(string input_primary_key, string input_secondary_
 		if(input_primary_key == current_label->primary_key)
 		{
 			remove_from_data_file(current_label);
-
-			// Remove from
+			return 1;
 		}
 
 		// Primary key doesn't exist
 		else
 		{
 			cout << "Chave primaria inexistente. Por favor, insira outra";
+			return 0;
 		}		
 	}
 
@@ -341,6 +342,37 @@ void inverted_list::remove_from_data_file(label_id_pointer node)
 	filein.close();
   fileout.close();
 }
+
+label_id_pointer inverted_list::get_head_label()
+{
+	return label_id_list.head;
+}
+
+secondary_key_pointer inverted_list::get_head_secondary()
+{
+	return secondary_key_list.head;
+}
+
+void inverted_list::set_data_file_title(string file_name)
+{
+	data_file = file_name;
+}
+
+string inverted_list::get_data_file_title()
+{
+	return data_file;
+}
+
+secondary_key_index_list inverted_list::get_secondary_key_list()
+{
+	return secondary_key_list;
+}
+
+label_id_index_list inverted_list::get_label_id_list()
+{
+	return label_id_list;
+}
+
 
 string primary_key_creator(string line, string line_ws)
 {
