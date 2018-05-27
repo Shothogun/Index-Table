@@ -26,7 +26,7 @@ typedef struct secondary_key_index_list_node
 	// Next node in the secondary key list
 	secondary_key_pointer next;
 
-	// First node in label list
+	// First node in brothers label list(same secondary key)
 	label_id_pointer first;
 
 	int id;
@@ -46,7 +46,7 @@ typedef struct label_id_index_list_node
 	label_id_pointer next;
 
 	// Same secondary key primary key list
-	label_id_pointer first;
+	label_id_pointer brother;
 
 	int id;
 
@@ -84,6 +84,7 @@ class inverted_list
 		void create_inverted_list();
 		void delete_secondary_key_list(secondary_key_pointer node);
 		void delete_label_id_list(label_id_pointer node);
+		void remove_from_data_file(label_id_pointer node);
 
 		secondary_key_index_list secondary_key_list;		
 		label_id_index_list label_id_list;
