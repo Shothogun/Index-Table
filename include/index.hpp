@@ -4,8 +4,8 @@
 #include <string>
 using namespace std;
 
-typedef struct secondary_key_index_file_node *secondary_key_pointer;
-typedef struct label_id_index_file_node *label_id_pointer;
+typedef struct secondary_key_index_list_node *secondary_key_pointer;
+typedef struct label_id_index_list_node *label_id_pointer;
 
 typedef struct student_data
 {
@@ -15,25 +15,24 @@ typedef struct student_data
 	string turma;
 	string OP;
 	string NRR;
+	string data_file;
 	
 } student_data;
 
 
-typedef struct secondary_key_index_file_node
+typedef struct secondary_key_index_list_node
 {
 	string secondary_key;
 
 	// Next node in the secondary key list
 	secondary_key_pointer next;
 
-	// First node in label list
+	// First node in brothers label list(same secondary key)
 	label_id_pointer first;
 
-	int id;
+} secondary_key_index_list_node;
 
-} secondary_key_index_file_node;
-
-typedef struct label_id_index_file_node
+typedef struct label_id_index_list_node
 {
 
 	string primary_key;
@@ -45,28 +44,26 @@ typedef struct label_id_index_file_node
 	// Next primary key in the label file
 	label_id_pointer next;
 
-	// Same secondary key primary key pointer
+	// Same secondary key primary key list
 	label_id_pointer brother;
 
-	int id;
-
-} label_id_index_file_node;
+} label_id_index_list_node;
 
 
 
-typedef struct secondary_key_index_file 
+typedef struct secondary_key_index_list 
 {
 	secondary_key_pointer head, tail;
 	int total;
 
-} secondary_key_index_file;
+} secondary_key_index_list;
 
-typedef struct label_id_index_file
+typedef struct label_id_index_list
 {
 	label_id_pointer head, tail;
 	int total;
 
-} label_id_index_file;
+} label_id_index_list;
 
 
 
@@ -78,18 +75,25 @@ class inverted_list
 		~inverted_list();
 		void insert_data(student_data data);
 		int remove_data(string input_primary_key, string input_secondary_key);
+		label_id_pointer get_head_label();
+		secondary_key_pointer get_head_secondary();
+		secondary_key_index_list get_secondary_key_list();
+		label_id_index_list get_label_id_list();
+		void set_data_file_title(string file_name);
+		string get_data_file_title();
+
 		//int update_data();
 
 	private:
 		void create_inverted_list();
-		void delete_secondary_key_file(secondary_key_pointer node);
-		void delete_label_id_file(label_id_pointer node);
+		void delete_secondary_key_list(secondary_key_pointer node);
+		void delete_label_id_list(label_id_pointer node);
 
-		secondary_key_index_file secondary_key_file;		
-		label_id_index_file label_id_file;
+		secondary_key_index_list secondary_key_list;		
+		label_id_index_list label_id_list;
 
 		// Indicates the data file name
-		string data_file;
+		string data_file = "none";
 };
 
 int primary_index_file_creator(string file_name);
