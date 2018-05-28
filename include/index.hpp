@@ -30,6 +30,8 @@ typedef struct secondary_key_index_list_node
 	// First node in brothers label list(same secondary key)
 	label_id_pointer first;
 
+	int id;
+
 } secondary_key_index_list_node;
 
 typedef struct label_id_index_list_node
@@ -47,6 +49,8 @@ typedef struct label_id_index_list_node
 	// Same secondary key primary key list
 	label_id_pointer brother;
 
+	int id;
+
 } label_id_index_list_node;
 
 
@@ -54,14 +58,14 @@ typedef struct label_id_index_list_node
 typedef struct secondary_key_index_list 
 {
 	secondary_key_pointer head, tail;
-	int total;
+	int total = 0;
 
 } secondary_key_index_list;
 
 typedef struct label_id_index_list
 {
 	label_id_pointer head, tail;
-	int total;
+	int total = 0;
 
 } label_id_index_list;
 

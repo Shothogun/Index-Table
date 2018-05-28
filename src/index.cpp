@@ -53,6 +53,9 @@ void inverted_list::insert_data(student_data data)
 	label_id_pointer input_node_label = new label_id_index_list_node;
 	secondary_key_pointer input_node_secondary = new secondary_key_index_list_node;
 	const int primary_key_length = 30;
+
+	input_node_secondary->id = secondary_key_list.total;
+	input_node_label->id = label_id_list.total;
 	label_id_list.total++;
 
 	input_node_secondary->secondary_key = data.curso;
@@ -92,6 +95,7 @@ void inverted_list::insert_data(student_data data)
 		secondary_key_list.head = input_node_secondary;
 		secondary_key_list.tail = input_node_secondary;
 
+		secondary_key_list.total++;
 	}
 
 	// List is not empty
@@ -171,6 +175,8 @@ void inverted_list::insert_data(student_data data)
 				prev_secondary->next = input_node_secondary;
 				input_node_secondary->next = current_secondary;
 			}
+
+			secondary_key_list.total++;
 		}
 
 		// If the secondary key doesn't exist yet and is the greatest value of the secondary key list 
@@ -183,6 +189,8 @@ void inverted_list::insert_data(student_data data)
 			secondary_key_list.tail->next = input_node_secondary;
 			secondary_key_list.tail = input_node_secondary;
 			input_node_secondary->next = NULL;
+
+			secondary_key_list.total++;
 		}
 
 		else
