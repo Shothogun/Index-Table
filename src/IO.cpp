@@ -1,4 +1,5 @@
 #include "IO.hpp"
+#include "index.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -97,6 +98,8 @@ void show_registers (string file_name)
 	registers.close();
 } // show_registers
 
+/*
+
 int get_register (string& formated_register)
 {
 	int bar_counter; // Conta quantas barras (/) foram localizadas na string.
@@ -134,12 +137,68 @@ int get_register (string& formated_register)
 	return 0;
 } // get_register
 
-void get_primary_key ()
-{
+*/
 
+void primary_key_list_creator (primary_list* list)
+{
+	int counter;
+
+	const int line_number_lenght = 3;
+	const int primary_key_lenght = 30;
+
+	string tmp_primary_key;
+	string tmp_number;
+	char tmp_line_number[line_number_lenght];
+	int line_number;
+
+	ifstream primary_index;
+
+	primary_index.open(list->primary_index_file);
+
+	while(getline(primary_index, tmp_primary_key))
+	{
+		tmp_number.clear();
+
+		tmp_primary_key.copy(tmp_line_number, line_number_lenght, primary_key_lenght + 1);
+		tmp_primary_key = tmp_primary_key.erase(primary_key_lenght, line_number_lenght + 1);
+
+		for(counter = 0; counter < line_number_lenght; counter ++)
+		{
+			tmp_number += tmp_line_number[counter];
+		}
+
+		line_number = stoi(tmp_number);
+
+		list->insert_data(tmp_primary_key, line_number);
+	}
+
+	primary_index.close();
 }
 
-void canonic_primary_key ()
-{
 
+void primary_key_file_updater (primary_list* list)
+{
+	//const int primary_key_lenght = 30;
+
+	ofstream primary_index;
+
+	primary_index.open(list->primary_index_file, ios::out | ios::trunc);
+
+	list->primary_key_list.current = list->primary_key_list.start->next;
+
+	while (list->primary_key_list.current != NULL)
+	{
+		primary_index << list->primary_key_list.current->primary_key;
+
+		if (list->primary_key_list.current->file_NRR < 10)
+			primary_index << " 00" << list->primary_key_list.current->file_NRR << "\n";
+
+		else if (list->primary_key_list.current->file_NRR < 100)
+			primary_index << " 0" << list->primary_key_list.current->file_NRR << "\n";
+
+		else
+			primary_index  << ' ' <<list->primary_key_list.current->file_NRR << "\n";
+
+		list->primary_key_list.current = list->primary_key_list.current->next;
+	}
 }
