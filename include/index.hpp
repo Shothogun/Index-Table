@@ -88,7 +88,6 @@ class inverted_list
 		void create_inverted_list();
 		void delete_secondary_key_list(secondary_key_pointer node);
 		void delete_label_id_list(label_id_pointer node);
-		void remove_from_data_file(label_id_pointer node);
 
 		secondary_key_index_list secondary_key_list;		
 		label_id_index_list label_id_list;

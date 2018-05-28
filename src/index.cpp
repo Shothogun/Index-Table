@@ -26,8 +26,8 @@ inverted_list::inverted_list()
 
 inverted_list::~inverted_list()
 {
-	delete_secondary_key_list(secondary_key_list.head);
 	delete_label_id_list(label_id_list.head);	
+	delete_secondary_key_list(secondary_key_list.head);
 }
 
 void inverted_list::delete_secondary_key_list(secondary_key_pointer node)
@@ -230,26 +230,30 @@ int inverted_list::remove_data(string input_primary_key, string input_secondary_
 			current_label = prev_label->brother;
 		}
 
+		// Found the searched data
 		if(input_primary_key == current_label->primary_key)
 		{
-			remove_from_data_file(current_label);
+
+			current_label->primary_key = "*";
 			return 1;
 		}
 
 		// Primary key doesn't exist
 		else
 		{
-			cout << "Chave primaria inexistente. Por favor, insira outra";
+			cout << "Chave primaria inexistente. Por favor, insira outra" << endl;
 			return 0;
 		}		
 	}
 
 	else
 	{
-		cout << "Chave secundaria inexistente. Por favor, insira outra";	
+		cout << "Chave secundaria inexistente. Por favor, insira outra"<< endl;	
 		return 0;
 	}
 }
+
+/*
 
 void inverted_list::remove_from_data_file(label_id_pointer node)
 {
@@ -342,6 +346,8 @@ void inverted_list::remove_from_data_file(label_id_pointer node)
 	filein.close();
   fileout.close();
 }
+
+*/
 
 label_id_pointer inverted_list::get_head_label()
 {
