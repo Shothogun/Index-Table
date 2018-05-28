@@ -1,4 +1,5 @@
 #include "index.hpp"
+#include "lists.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -26,8 +27,8 @@ inverted_list::inverted_list()
 
 inverted_list::~inverted_list()
 {
-	delete_secondary_key_list(secondary_key_list.head);
 	delete_label_id_list(label_id_list.head);	
+	delete_secondary_key_list(secondary_key_list.head);
 }
 
 void inverted_list::delete_secondary_key_list(secondary_key_pointer node)
@@ -53,6 +54,9 @@ void inverted_list::insert_data(student_data data)
 	label_id_pointer input_node_label = new label_id_index_list_node;
 	secondary_key_pointer input_node_secondary = new secondary_key_index_list_node;
 	const int primary_key_length = 30;
+
+	input_node_secondary->id = secondary_key_list.total;
+	input_node_label->id = label_id_list.total;
 	label_id_list.total++;
 
 	input_node_secondary->secondary_key = data.curso;
@@ -65,8 +69,8 @@ void inverted_list::insert_data(student_data data)
 	// Set the 30 characters primary key
 	if(input_node_label->primary_key.length() > primary_key_length)
 	{
-		input_node_label->primary_key.erase(input_node_secondary->secondary_key.begin()+29,
-																						input_node_secondary->secondary_key.end());
+		input_node_label->primary_key.erase(input_node_label->primary_key.begin()+30,
+																						input_node_label->primary_key.end());
 	}
 
 	// Both head should be set NULL at the initial conditions
@@ -78,6 +82,7 @@ void inverted_list::insert_data(student_data data)
 	// If the list is empty
 	else if(label_id_list.head == NULL && secondary_key_list.head == NULL)
 	{
+
 		// Secondary's key head and tail creation
 		input_node_label->brother = NULL;
 		input_node_label->next = NULL;
@@ -91,6 +96,7 @@ void inverted_list::insert_data(student_data data)
 		secondary_key_list.head = input_node_secondary;
 		secondary_key_list.tail = input_node_secondary;
 
+		secondary_key_list.total++;
 	}
 
 	// List is not empty
@@ -147,7 +153,7 @@ void inverted_list::insert_data(student_data data)
 			else 
 			{
 				current_label->brother = input_node_label;
-				input_node_label = NULL;
+				input_node_label->brother = NULL;
 			}
 		}
 
@@ -156,7 +162,7 @@ void inverted_list::insert_data(student_data data)
 		{
 
 			// Set primary key
-			current_secondary->first = input_node_label;
+			input_node_secondary->first = input_node_label;
 			input_node_label->brother = NULL;
 
 			if(current_secondary == secondary_key_list.head)
@@ -170,33 +176,37 @@ void inverted_list::insert_data(student_data data)
 				prev_secondary->next = input_node_secondary;
 				input_node_secondary->next = current_secondary;
 			}
+
+			secondary_key_list.total++;
 		}
 
-		// If the secondary key doesn't exist yet and is the greatest value fo the secondary key list 
+		// If the secondary key doesn't exist yet and is the greatest value of the secondary key list 
 		else if(current_secondary == secondary_key_list.tail)
 		{
 			// Set primary key
-
-			current_secondary->first = input_node_label;
+			input_node_secondary->first = input_node_label;
 			input_node_label->brother = NULL;
 
 			secondary_key_list.tail->next = input_node_secondary;
-			input_node_secondary->next = NULL;
 			secondary_key_list.tail = input_node_secondary;
+			input_node_secondary->next = NULL;
+
+			secondary_key_list.total++;
 		}
 
 		else
 		{
 
 			cout << "Erro(index.cpp:179) no processo de insercao" << endl;
-			return ;
+			return ;	
 		}
 
 
 		// Insert primary key in primary key file
 
 		label_id_list.tail->next = input_node_label;
-		label_id_list.tail = input_node_label;
+		input_node_label->next = NULL;
+		label_id_list.tail = input_node_label;		
 	}
 }
 
@@ -229,26 +239,30 @@ int inverted_list::remove_data(string input_primary_key, string input_secondary_
 			current_label = prev_label->brother;
 		}
 
+		// Found the searched data
 		if(input_primary_key == current_label->primary_key)
 		{
-			remove_from_data_file(current_label);
 
-			// Remove from
+			current_label->primary_key = "*";
+			return 1;
 		}
 
 		// Primary key doesn't exist
 		else
 		{
-			cout << "Chave primaria inexistente. Por favor, insira outra";
+			cout << "Chave primaria inexistente. Por favor, insira outra" << endl;
+			return 0;
 		}		
 	}
 
 	else
 	{
-		cout << "Chave secundaria inexistente. Por favor, insira outra";	
+		cout << "Chave secundaria inexistente. Por favor, insira outra"<< endl;	
 		return 0;
 	}
 }
+
+/*
 
 void inverted_list::remove_from_data_file(label_id_pointer node)
 {
@@ -342,6 +356,39 @@ void inverted_list::remove_from_data_file(label_id_pointer node)
   fileout.close();
 }
 
+*/
+
+label_id_pointer inverted_list::get_head_label()
+{
+	return label_id_list.head;
+}
+
+secondary_key_pointer inverted_list::get_head_secondary()
+{
+	return secondary_key_list.head;
+}
+
+void inverted_list::set_data_file_title(string file_name)
+{
+	data_file = file_name;
+}
+
+string inverted_list::get_data_file_title()
+{
+	return data_file;
+}
+
+secondary_key_index_list inverted_list::get_secondary_key_list()
+{
+	return secondary_key_list;
+}
+
+label_id_index_list inverted_list::get_label_id_list()
+{
+	return label_id_list;
+}
+
+
 string primary_key_creator(string line, string line_ws)
 {
 	// Key's size 
@@ -420,19 +467,19 @@ string primary_index_file_creator(string file_name)
 	int line_number = 0;				
 
 	database.open(file_name);
-	primary_index.open(name, ios::out | ios::trunc);
 
 	if (!(database.is_open()))
 	{
-		name = '0';
-		cout << "Error opening "<< file_name <<" .\n";
-		return name;
+		cout<< "Error: The program did not find "<< file_name << ".\n"; 
+		return "none";
 	}
+
+	primary_index.open(name, ios::out | ios::trunc);
 
 	while(getline(database, line))
 	{
 		// Verifies if the line is the header of the archive or if the line was erased
-		if (line[0] == header_indicator || line=[0] == deleted_indicator)
+		if (line[0] == header_indicator || line[0] == deleted_indicator)
 		{
 			line_number++;
 			continue;
@@ -504,4 +551,155 @@ int file_header_creator (string file_name, string new_file_name)
 	new_database.close();
 
 	return 0;
+}
+
+int secondary_index_files_creator(string file_name)
+{
+	string name_sec = "indices_sec_";
+	string name_label = "labels_";
+	string identifier = file_name;
+	string extension = ".ind";
+
+	uint counter=0;
+	int found;
+
+	// Get the last character of the name, without the extension of normaly 4 characters
+	while (counter < 4)
+	{
+		identifier.pop_back();
+
+		counter ++;
+	}
+	identifier = identifier.back();
+
+	// Name of the generated files
+	name_sec += identifier + extension;
+	name_label += identifier + extension;
+
+	// Identifies that the current line is a header
+	const char header_indicator = '#';
+
+	// Identifies that the current line was deleted
+	const char deleted_indicator = '*';
+
+	// Original database file
+	ifstream database;
+
+	// Index databases files 
+	ofstream secondary_index;
+	ofstream labels_index;
+
+	// Database file line 
+	string line;
+
+	// Database file line without space
+	string line_ws;
+
+	// Register class and number of line of the last label
+	generic_register class_;
+
+	// Existent classes and number of the line of the last label
+	vector <generic_register> existent_classes;
+
+	// Line position in label file
+	int line_number_label = 0;				
+
+	database.open(file_name);
+
+	if (!(database.is_open()))
+	{
+		cout<< "Error: The program did not find "<< file_name << ".\n"; 
+		return 0;
+	}
+
+	secondary_index.open(name_sec, ios::out | ios::trunc);
+	labels_index.open(name_label, ios::out | ios::trunc);
+
+	while(getline(database, line))
+	{
+		// Verifies if the line is the header of the archive or if the line was erased
+		if (line[0] == header_indicator || line[0] == deleted_indicator)
+		{
+			continue;
+		}
+		class_.key= secondary_key_creator(line,class_.key);
+
+		line_ws = primary_key_creator(line,line_ws);
+
+		found = 0;
+		for (counter = 0; counter < existent_classes.size() && found == 0; counter ++)
+		{
+			if (class_.key.compare(existent_classes[counter].key) == 0)
+			{
+				found = 1;
+				// Atualizando os indicadores da lista
+				class_.position = existent_classes[counter].position;
+				existent_classes[counter].position = line_number_label;
+			}
+		}
+
+		if (found == 0)
+		{
+			class_.position = line_number_label;
+
+			existent_classes.push_back(class_);
+
+			class_.position = -1;
+		}
+
+
+		labels_index << line_ws << " ";
+
+		if (class_.position < 0)
+		{
+			class_.position *= -1;
+			labels_index << "-0" << class_.position << "\n";
+		}
+
+		else if (class_.position < 10)
+			labels_index << "00" << class_.position << "\n";
+
+		else if (class_.position < 100)
+			labels_index << "0" << class_.position << "\n";
+
+		else
+			labels_index  << class_.position << "\n";
+
+		line_number_label++;
+	}
+
+	for (counter = 0; counter < existent_classes.size(); counter++)
+	{
+		secondary_index << existent_classes[counter].key << " ";
+
+		if (existent_classes[counter].position < 10)
+			secondary_index << "00" << existent_classes[counter].position << "\n";
+
+		else if (existent_classes[counter].position < 100)
+			secondary_index << "0" << existent_classes[counter].position << "\n";
+
+		else
+			secondary_index  << existent_classes[counter].position << "\n";
+	}
+
+	labels_index.close();
+	secondary_index.close();
+	database.close();
+
+	return 0;
+}
+
+string secondary_key_creator(string line, string secondary_key)
+{
+	/* 
+		Key_position is a variable that refers to the character location from the line
+		of database file.
+	*/
+	const int key_position = 61;		
+
+	secondary_key.clear();
+		
+	secondary_key.push_back(line[key_position]);
+
+	return secondary_key;
 }
