@@ -16,6 +16,8 @@ typedef struct student_data
 	string OP;
 	string NRR;
 	string data_file;
+	string primary_key;
+	int label_line;
 	
 } student_data;
 
@@ -38,10 +40,6 @@ typedef struct label_id_index_list_node
 {
 
 	string primary_key;
-
-	// NRR in the data file
-
-	string NRR;
 	
 	// Next primary key in the label file
 	label_id_pointer next;
@@ -50,6 +48,9 @@ typedef struct label_id_index_list_node
 	label_id_pointer brother;
 
 	int id;
+
+	// Label line number in file 
+	int line_number;
 
 } label_id_index_list_node;
 
@@ -86,14 +87,14 @@ class inverted_list
 		void set_data_file_title(string file_name);
 		string get_data_file_title();
 
+		secondary_key_index_list secondary_key_list;
 		//int update_data();
 
 	private:
 		void create_inverted_list();
 		void delete_secondary_key_list(secondary_key_pointer node);
 		void delete_label_id_list(label_id_pointer node);
-
-		secondary_key_index_list secondary_key_list;		
+		
 		label_id_index_list label_id_list;
 
 		// Indicates the data file name
