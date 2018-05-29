@@ -100,9 +100,11 @@ class inverted_list
 		string data_file = "none";
 };
 
-int primary_index_file_creator(string file_name);
+string primary_index_file_creator(string file_name);
 string primary_key_creator(string line, string line_ws);
 int file_header_creator (string file_name, string new_file_name);
+int secondary_index_files_creator(string file_name);
+string secondary_key_creator(string line, string secondary_key);
 
 
 

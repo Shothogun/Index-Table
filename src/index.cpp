@@ -1,4 +1,5 @@
 #include "index.hpp"
+#include "lists.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -424,7 +425,7 @@ string primary_key_creator(string line, string line_ws)
 	return line_ws;
 }
 
-int primary_index_file_creator(string file_name)
+string primary_index_file_creator(string file_name)
 {
 	string name = "indices_";
 	string identifier = file_name;
@@ -447,6 +448,9 @@ int primary_index_file_creator(string file_name)
 	// Identifies that the current line is a header
 	const char header_indicator = '#';
 
+	// Identifies that the current line was deleted
+	const char deleted_indicator = '*';
+
 	// Original database file
 	ifstream database;
 
@@ -463,12 +467,19 @@ int primary_index_file_creator(string file_name)
 	int line_number = 0;				
 
 	database.open(file_name);
+
+	if (!(database.is_open()))
+	{
+		cout<< "Error: The program did not find "<< file_name << ".\n"; 
+		return "none";
+	}
+
 	primary_index.open(name, ios::out | ios::trunc);
 
 	while(getline(database, line))
 	{
-		// Verifies if the line is the header of the archive
-		if (line[0] == header_indicator)
+		// Verifies if the line is the header of the archive or if the line was erased
+		if (line[0] == header_indicator || line[0] == deleted_indicator)
 		{
 			line_number++;
 			continue;
@@ -494,7 +505,7 @@ int primary_index_file_creator(string file_name)
 	primary_index.close();
 	database.close();
 
-	return 1;
+	return name;
 
 }
 
@@ -540,4 +551,155 @@ int file_header_creator (string file_name, string new_file_name)
 	new_database.close();
 
 	return 0;
+}
+
+int secondary_index_files_creator(string file_name)
+{
+	string name_sec = "indices_sec_";
+	string name_label = "labels_";
+	string identifier = file_name;
+	string extension = ".ind";
+
+	uint counter=0;
+	int found;
+
+	// Get the last character of the name, without the extension of normaly 4 characters
+	while (counter < 4)
+	{
+		identifier.pop_back();
+
+		counter ++;
+	}
+	identifier = identifier.back();
+
+	// Name of the generated files
+	name_sec += identifier + extension;
+	name_label += identifier + extension;
+
+	// Identifies that the current line is a header
+	const char header_indicator = '#';
+
+	// Identifies that the current line was deleted
+	const char deleted_indicator = '*';
+
+	// Original database file
+	ifstream database;
+
+	// Index databases files 
+	ofstream secondary_index;
+	ofstream labels_index;
+
+	// Database file line 
+	string line;
+
+	// Database file line without space
+	string line_ws;
+
+	// Register class and number of line of the last label
+	generic_register class_;
+
+	// Existent classes and number of the line of the last label
+	vector <generic_register> existent_classes;
+
+	// Line position in label file
+	int line_number_label = 0;				
+
+	database.open(file_name);
+
+	if (!(database.is_open()))
+	{
+		cout<< "Error: The program did not find "<< file_name << ".\n"; 
+		return 0;
+	}
+
+	secondary_index.open(name_sec, ios::out | ios::trunc);
+	labels_index.open(name_label, ios::out | ios::trunc);
+
+	while(getline(database, line))
+	{
+		// Verifies if the line is the header of the archive or if the line was erased
+		if (line[0] == header_indicator || line[0] == deleted_indicator)
+		{
+			continue;
+		}
+		class_.key= secondary_key_creator(line,class_.key);
+
+		line_ws = primary_key_creator(line,line_ws);
+
+		found = 0;
+		for (counter = 0; counter < existent_classes.size() && found == 0; counter ++)
+		{
+			if (class_.key.compare(existent_classes[counter].key) == 0)
+			{
+				found = 1;
+				// Atualizando os indicadores da lista
+				class_.position = existent_classes[counter].position;
+				existent_classes[counter].position = line_number_label;
+			}
+		}
+
+		if (found == 0)
+		{
+			class_.position = line_number_label;
+
+			existent_classes.push_back(class_);
+
+			class_.position = -1;
+		}
+
+
+		labels_index << line_ws << " ";
+
+		if (class_.position < 0)
+		{
+			class_.position *= -1;
+			labels_index << "-0" << class_.position << "\n";
+		}
+
+		else if (class_.position < 10)
+			labels_index << "00" << class_.position << "\n";
+
+		else if (class_.position < 100)
+			labels_index << "0" << class_.position << "\n";
+
+		else
+			labels_index  << class_.position << "\n";
+
+		line_number_label++;
+	}
+
+	for (counter = 0; counter < existent_classes.size(); counter++)
+	{
+		secondary_index << existent_classes[counter].key << " ";
+
+		if (existent_classes[counter].position < 10)
+			secondary_index << "00" << existent_classes[counter].position << "\n";
+
+		else if (existent_classes[counter].position < 100)
+			secondary_index << "0" << existent_classes[counter].position << "\n";
+
+		else
+			secondary_index  << existent_classes[counter].position << "\n";
+	}
+
+	labels_index.close();
+	secondary_index.close();
+	database.close();
+
+	return 0;
+}
+
+string secondary_key_creator(string line, string secondary_key)
+{
+	/* 
+		Key_position is a variable that refers to the character location from the line
+		of database file.
+	*/
+	const int key_position = 61;		
+
+	secondary_key.clear();
+		
+	secondary_key.push_back(line[key_position]);
+
+	return secondary_key;
 }

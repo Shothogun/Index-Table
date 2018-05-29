@@ -2,19 +2,19 @@
 
 using namespace std;
 
-void insertion_sort (vector<string>& unsorted_values)
+void insertion_sort (vector<generic_register>& unsorted_values)
 {
 	int start = 0, end = unsorted_values.size() - 1;
 	int current = start + 1;
 	int aux;
-	string swap;
+	generic_register swap;
 
 	while (current <= end) // Percorre todo o array
 	{
 		aux = current;
 		while (aux > start)
 		{
-			if (unsorted_values[aux].compare(unsorted_values[aux-1]) < 0) // Compara com os valores anteriores, troca se o anterior for maior
+			if (unsorted_values[aux].key.compare(unsorted_values[aux-1].key) < 0) // Compara com os valores anteriores, troca se o anterior for maior
 			{
 				swap = unsorted_values[aux];
 				unsorted_values[aux] = unsorted_values[aux-1];
@@ -31,19 +31,19 @@ void insertion_sort (vector<string>& unsorted_values)
 } // insertion_sort
 
 // Admite que "sorted_values" ja esta ordenado a nao ser pelos ultimos elementos inseridos
-void insertion_sort_inclusion ( vector <string> &sorted_values, int number_insertions)
+void insertion_sort_inclusion ( vector <generic_register> &sorted_values, int number_insertions)
 {
 	int start = 0, end = sorted_values.size() - 1;
 	int current = end - (number_insertions - 1); // Primeiro novo elemento a ser inserido
 	int aux;
-	string swap;
+	generic_register swap;
 
 	while (current <= end) // Percorre todo o array
 	{
 		aux = current;
 		while (aux > start)
 		{
-			if (sorted_values[aux].compare(sorted_values[aux-1]) < 0) // Compara com os valores anteriores, troca se o anterior for maior
+			if (sorted_values[aux].key.compare(sorted_values[aux-1].key) < 0) // Compara com os valores anteriores, troca se o anterior for maior
 			{
 				swap = sorted_values[aux];
 				sorted_values[aux] = sorted_values[aux-1];
@@ -59,10 +59,10 @@ void insertion_sort_inclusion ( vector <string> &sorted_values, int number_inser
 	}
 } // insertion_sort_inclusion
 
-void heapsort (vector <string> &unsorted_values)
+void heapsort (vector <generic_register> &unsorted_values)
 {
 	int size = unsorted_values.size();
-	string swap;
+	generic_register swap;
 
 	create_max_heap (unsorted_values);
 
@@ -85,14 +85,14 @@ void heapsort (vector <string> &unsorted_values)
 } // heapsort
 
 // Recebe como parametros o vetor, o nodo atual e o tamanho do array que deve ser processado no heap
-void max_heapfy (vector<string> &unsorted_values, int current_node, int size)
+void max_heapfy (vector<generic_register> &unsorted_values, int current_node, int size)
 {
 	int left_son = current_node*2 + 1;
 	int right_son = current_node*2 + 2;
-	string swap;
+	generic_register swap;
 
 	// Se o filho a esquerda for maior que o pai, troca seus valores
-	if (left_son < size && unsorted_values[current_node].compare(unsorted_values[left_son]) < 0)
+	if (left_son < size && unsorted_values[current_node].key.compare(unsorted_values[left_son].key) < 0)
 	{
 		swap = unsorted_values[left_son];
 		unsorted_values[left_son] = unsorted_values[current_node];
@@ -101,7 +101,7 @@ void max_heapfy (vector<string> &unsorted_values, int current_node, int size)
 	}
 
 	// Se o filho a direita for maior que o pai, troca seus valores
-	if (right_son < size && unsorted_values[current_node].compare(unsorted_values[right_son]) < 0)
+	if (right_son < size && unsorted_values[current_node].key.compare(unsorted_values[right_son].key) < 0)
 	{
 		swap = unsorted_values[right_son];
 		unsorted_values[right_son] = unsorted_values[current_node];
@@ -111,7 +111,7 @@ void max_heapfy (vector<string> &unsorted_values, int current_node, int size)
 
 } // max_heapfy
 
-void create_max_heap (vector<string> &unsorted_values)
+void create_max_heap (vector<generic_register> &unsorted_values)
 {
 	int current_node;
 	for (current_node = unsorted_values.size() - 1; current_node >= 0; current_node--)
