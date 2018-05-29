@@ -202,5 +202,3 @@ void primary_key_file_updater (primary_list* list)
 		list->primary_key_list.current = list->primary_key_list.current->next;
 	}
 }
-
-*/

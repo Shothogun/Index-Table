@@ -62,9 +62,7 @@ void inverted_list::insert_data(student_data data)
 	input_node_secondary->secondary_key = data.curso;
 
 	input_node_label->NRR = data.NRR;
-	input_node_label->primary_key = data.matricula;
-	input_node_label->primary_key += data.nome;
-
+	input_node_label->primary_key = data.primary_key;
 
 	// Set the 30 characters primary key
 	if(input_node_label->primary_key.length() > primary_key_length)

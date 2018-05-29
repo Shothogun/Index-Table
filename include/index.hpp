@@ -16,6 +16,7 @@ typedef struct student_data
 	string OP;
 	string NRR;
 	string data_file;
+	string primary_key;
 	
 } student_data;
 
