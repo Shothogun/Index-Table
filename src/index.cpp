@@ -53,7 +53,6 @@ void inverted_list::insert_data(student_data data)
 {
 	label_id_pointer input_node_label = new label_id_index_list_node;
 	secondary_key_pointer input_node_secondary = new secondary_key_index_list_node;
-	const int primary_key_length = 30;
 
 	input_node_secondary->id = secondary_key_list.total;
 	input_node_label->id = label_id_list.total;
@@ -61,17 +60,8 @@ void inverted_list::insert_data(student_data data)
 
 	input_node_secondary->secondary_key = data.curso;
 
-	input_node_label->NRR = data.NRR;
-	input_node_label->primary_key = data.matricula;
-	input_node_label->primary_key += data.nome;
-
-
-	// Set the 30 characters primary key
-	if(input_node_label->primary_key.length() > primary_key_length)
-	{
-		input_node_label->primary_key.erase(input_node_label->primary_key.begin()+30,
-																						input_node_label->primary_key.end());
-	}
+	input_node_label->line_number = data.label_line;
+	input_node_label->primary_key = data.primary_key;
 
 	// Both head should be set NULL at the initial conditions
 	if( (label_id_list.head == NULL) != (secondary_key_list.head == NULL) )
@@ -595,8 +585,8 @@ int secondary_index_files_creator(string file_name)
 	// Database file line without space
 	string line_ws;
 
-	// Register class and number of line of the last label
-	generic_register class_;
+	// Register "curso" and number of line of the last label
+	generic_register major;
 
 	// Existent classes and number of the line of the last label
 	vector <generic_register> existent_classes;
@@ -622,48 +612,48 @@ int secondary_index_files_creator(string file_name)
 		{
 			continue;
 		}
-		class_.key= secondary_key_creator(line,class_.key);
+		major.key= secondary_key_creator(line,major.key);
 
 		line_ws = primary_key_creator(line,line_ws);
 
 		found = 0;
 		for (counter = 0; counter < existent_classes.size() && found == 0; counter ++)
 		{
-			if (class_.key.compare(existent_classes[counter].key) == 0)
+			if (major.key.compare(existent_classes[counter].key) == 0)
 			{
 				found = 1;
 				// Atualizando os indicadores da lista
-				class_.position = existent_classes[counter].position;
+				major.position = existent_classes[counter].position;
 				existent_classes[counter].position = line_number_label;
 			}
 		}
 
 		if (found == 0)
 		{
-			class_.position = line_number_label;
+			major.position = line_number_label;
 
-			existent_classes.push_back(class_);
+			existent_classes.push_back(major);
 
-			class_.position = -1;
+			major.position = -1;
 		}
 
 
 		labels_index << line_ws << " ";
 
-		if (class_.position < 0)
+		if (major.position < 0)
 		{
-			class_.position *= -1;
-			labels_index << "-0" << class_.position << "\n";
+			major.position *= -1;
+			labels_index << "-0" << major.position << "\n";
 		}
 
-		else if (class_.position < 10)
-			labels_index << "00" << class_.position << "\n";
+		else if (major.position < 10)
+			labels_index << "00" << major.position << "\n";
 
-		else if (class_.position < 100)
-			labels_index << "0" << class_.position << "\n";
+		else if (major.position < 100)
+			labels_index << "0" << major.position << "\n";
 
 		else
-			labels_index  << class_.position << "\n";
+			labels_index  << major.position << "\n";
 
 		line_number_label++;
 	}
@@ -695,11 +685,16 @@ string secondary_key_creator(string line, string secondary_key)
 		Key_position is a variable that refers to the character location from the line
 		of database file.
 	*/
-	const int key_position = 61;		
+	int counter;
+	const int key_position = 52;
+	const int key_size = 2;		
 
 	secondary_key.clear();
-		
-	secondary_key.push_back(line[key_position]);
-
+	
+	for (counter = key_position; counter < key_position + key_size; counter ++)
+	{
+		secondary_key.push_back(line[counter]);
+	}
+	
 	return secondary_key;
 }
