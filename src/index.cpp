@@ -1,5 +1,5 @@
 #include "index.hpp"
-#include "lists.hpp"
+#include "IO.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -53,7 +53,6 @@ void inverted_list::insert_data(student_data data)
 {
 	label_id_pointer input_node_label = new label_id_index_list_node;
 	secondary_key_pointer input_node_secondary = new secondary_key_index_list_node;
-	const int primary_key_length = 30;
 
 	input_node_secondary->id = secondary_key_list.total;
 	input_node_label->id = label_id_list.total;
@@ -61,15 +60,8 @@ void inverted_list::insert_data(student_data data)
 
 	input_node_secondary->secondary_key = data.curso;
 
-	input_node_label->NRR = data.NRR;
+	input_node_label->line_number = data.label_line;
 	input_node_label->primary_key = data.primary_key;
-
-	// Set the 30 characters primary key
-	if(input_node_label->primary_key.length() > primary_key_length)
-	{
-		input_node_label->primary_key.erase(input_node_label->primary_key.begin()+30,
-																						input_node_label->primary_key.end());
-	}
 
 	// Both head should be set NULL at the initial conditions
 	if( (label_id_list.head == NULL) != (secondary_key_list.head == NULL) )
@@ -241,7 +233,7 @@ int inverted_list::remove_data(string input_primary_key, string input_secondary_
 		if(input_primary_key == current_label->primary_key)
 		{
 
-			current_label->primary_key = "*";
+			current_label->primary_key[0] = '*';
 			return 1;
 		}
 
@@ -259,102 +251,6 @@ int inverted_list::remove_data(string input_primary_key, string input_secondary_
 		return 0;
 	}
 }
-
-/*
-
-void inverted_list::remove_from_data_file(label_id_pointer node)
-{
-	string strNew = "*";
-	string strTemp;
-	string empty_PED = "#-1";
-	string position;
-
-	ifstream filein(data_file);
-	ofstream fileout(data_file);
-
-	if(!filein || !fileout)
-	{
-	  cout << "Error opening files!" << endl;
-	  return ;
-	}
-
-	int i = 0;
-
-
-	getline(filein, strTemp);
-
-	// If PED is empty
-	if(strTemp == empty_PED)
-	{
-
-		filein.seekg(0, filein.beg);
-
-		while(filein >> strTemp)
-	  {
-	  	// Updates header
-	  	if(i == 0)
-	  	{
-	  		if(strTemp == empty_PED)
-	  		{
-	  			strTemp = strNew;
-	  			strTemp += node->NRR;
-	  		}
-	  	}
-
-	  	//Erase data
-	    if(to_string(i) == node->NRR)
-	    {
-	    	strTemp = strNew ;
-	    	strTemp += "-1";
-	    }
-
-	    strTemp += "\n";
-	    fileout << strTemp;
-
-	    i++;
-	  }
-	}
-
-	else
-	{
-		filein.seekg(0, filein.beg);
-
-		while(filein >> strTemp)
-	  {
-	  	// Substitutes header
-	  	if(i == 0)
-	  	{
-	  		if(empty_PED != strTemp)
-	  		{
-	  			strTemp.erase(0,1);
-
-	  			// Former PED header
-	  			position = strTemp;
-
-			  	strTemp = strNew;
-			  	strTemp += node->NRR;
-	  		}
-	  	}
-
-	  	// Erases data
-	    if(to_string(i) == node->NRR)
-	    {
-	    	strTemp = strNew;
-	    	strTemp += position;
-	    }
-
-	    strTemp += "\n";
-	    fileout << strTemp;
-
-	    i++;
-	  }
-	}
-	
-	filein.close();
-  fileout.close();
-}
-
-*/
 
 label_id_pointer inverted_list::get_head_label()
 {
@@ -512,8 +408,6 @@ int file_header_creator (string file_name, string new_file_name)
 	// Identifies that the current line is a header
 	const char header_indicator = '#';
 
-	int counter;
-
 	ifstream database;
 	ofstream new_database;
 
@@ -531,13 +425,7 @@ int file_header_creator (string file_name, string new_file_name)
 	database.seekg(0, database.beg);
 
 	// Header
-	new_database << header_indicator;
-
-	for (counter = 0; counter < 3; counter++)
-	{
-		new_database << ' ';  
-	}
-	new_database << '\n';
+	new_database << header_indicator << "-01\n";
 
 	// Copy the registers to the other file
 	while(getline(database,tmp_register))
@@ -593,8 +481,8 @@ int secondary_index_files_creator(string file_name)
 	// Database file line without space
 	string line_ws;
 
-	// Register class and number of line of the last label
-	generic_register class_;
+	// Register "curso" and number of line of the last label
+	generic_register major;
 
 	// Existent classes and number of the line of the last label
 	vector <generic_register> existent_classes;
@@ -620,48 +508,48 @@ int secondary_index_files_creator(string file_name)
 		{
 			continue;
 		}
-		class_.key= secondary_key_creator(line,class_.key);
+		major.key= secondary_key_creator(line,major.key);
 
 		line_ws = primary_key_creator(line,line_ws);
 
 		found = 0;
 		for (counter = 0; counter < existent_classes.size() && found == 0; counter ++)
 		{
-			if (class_.key.compare(existent_classes[counter].key) == 0)
+			if (major.key.compare(existent_classes[counter].key) == 0)
 			{
 				found = 1;
 				// Atualizando os indicadores da lista
-				class_.position = existent_classes[counter].position;
+				major.position = existent_classes[counter].position;
 				existent_classes[counter].position = line_number_label;
 			}
 		}
 
 		if (found == 0)
 		{
-			class_.position = line_number_label;
+			major.position = line_number_label;
 
-			existent_classes.push_back(class_);
+			existent_classes.push_back(major);
 
-			class_.position = -1;
+			major.position = -1;
 		}
 
 
 		labels_index << line_ws << " ";
 
-		if (class_.position < 0)
+		if (major.position < 0)
 		{
-			class_.position *= -1;
-			labels_index << "-0" << class_.position << "\n";
+			major.position *= -1;
+			labels_index << "-0" << major.position << "\n";
 		}
 
-		else if (class_.position < 10)
-			labels_index << "00" << class_.position << "\n";
+		else if (major.position < 10)
+			labels_index << "00" << major.position << "\n";
 
-		else if (class_.position < 100)
-			labels_index << "0" << class_.position << "\n";
+		else if (major.position < 100)
+			labels_index << "0" << major.position << "\n";
 
 		else
-			labels_index  << class_.position << "\n";
+			labels_index  << major.position << "\n";
 
 		line_number_label++;
 	}
@@ -693,11 +581,154 @@ string secondary_key_creator(string line, string secondary_key)
 		Key_position is a variable that refers to the character location from the line
 		of database file.
 	*/
-	const int key_position = 61;		
+	int counter;
+	const int key_position = 52;
+	const int key_size = 2;		
 
 	secondary_key.clear();
-		
-	secondary_key.push_back(line[key_position]);
+	
+	for (counter = key_position; counter < key_position + key_size; counter ++)
+	{
+		secondary_key.push_back(line[counter]);
+	}
 
 	return secondary_key;
+}
+
+void add_student (primary_list* prim_list, inverted_list* inv_list, string register_file)
+{
+	const int header_lenght = 4;
+	const int line_number_lenght = 3;
+	const int register_lenght = 62;
+
+	int counter;
+
+	student_data data;
+	string full_register;
+	string header;
+	string deleted;
+	string number;
+	string tmp_register;
+	char tmp_number [line_number_lenght];
+
+	int line_number;
+
+	fstream main_file;
+
+	main_file.open(register_file, ios::out | ios::in);
+
+	data = get_register(full_register);
+
+	getline(main_file, header);
+
+	main_file.seekp(0,main_file.end);
+
+	// PED
+	if (header[0] == '#' && header[1] != '-')
+	{
+		header.copy(tmp_number, line_number_lenght, 1);
+
+		for(counter = 0; counter < line_number_lenght; counter ++)
+		{
+			number += tmp_number[counter];
+		}
+
+		line_number = stoi(number);
+
+		main_file.seekg((header_lenght+1) + ((line_number-1) * (register_lenght+2)), main_file.beg);
+
+		getline(main_file, deleted);
+
+		number.clear();
+
+		deleted.copy(tmp_number, line_number_lenght, 1);
+		for(counter = 0; counter < line_number_lenght; counter ++)
+		{
+			number += tmp_number[counter];
+		}
+
+		main_file.seekp(0, main_file.beg);
+
+		main_file << '#' << number << '\n';
+
+		main_file.seekp((header_lenght+1) + ((line_number-1) * (register_lenght+2)), main_file.beg);
+	}
+
+	main_file << full_register;
+
+	prim_list->insert_data(data.primary_key, prim_list->last_line + 1);
+
+	data.label_line = inv_list->label_id_list.total;
+
+	inv_list->insert_data(data);
+
+	main_file.close();
+}
+
+void remove_student (primary_list* prim_list, inverted_list* inv_list, string primary_key, string register_file)
+{	
+	const int header_lenght = 4;
+	const int line_number_lenght = 3;
+	const int register_lenght = 62;
+
+	int counter;
+
+	primary_key_pointer* pointer;
+	vector <generic_register> vector_of_list;
+	int file_NRR;
+	string tmp_register;
+	string header;
+	string number_header;
+	char tmp_number [line_number_lenght];
+	string secondary_key;
+
+	fstream main_file;
+
+	main_file.open(register_file);
+
+	prim_list->list2vector(vector_of_list);
+
+	pointer = prim_list->find_key(vector_of_list, primary_key);
+
+	file_NRR = (*pointer)->file_NRR;
+
+	main_file.seekg((header_lenght+1) + ((file_NRR-1) * (register_lenght+2)), main_file.beg);
+
+	getline(main_file, tmp_register);
+
+	// Atualizando a PED
+
+		// Mudando header
+	main_file.seekg(0, main_file.beg);
+
+	getline(main_file, header);
+
+	header.copy(tmp_number, line_number_lenght, 1);
+
+	for(counter = 0; counter < line_number_lenght; counter ++)
+	{
+		number_header += tmp_number[counter];
+	}
+
+	main_file.seekp(1, main_file.beg);
+
+	if (file_NRR < 10)
+		main_file << "00" << file_NRR << "\n";
+
+	else if (file_NRR < 100)
+		main_file << "0" << file_NRR << "\n";
+
+	else
+		main_file  << file_NRR << "\n";
+
+		// "Deletando" o espaco
+	main_file.seekp((header_lenght+1) + ((file_NRR-1) * (register_lenght+2)), main_file.beg);
+
+	main_file << '*' << number_header << ' ';
+
+	prim_list->remove_data(pointer);
+
+	secondary_key = secondary_key_creator(tmp_register, secondary_key);
+
+	inv_list->remove_data(primary_key, secondary_key);
 }

@@ -1,6 +1,7 @@
 #ifndef INDEX_HPP
 #define INDEX_HPP
 
+#include "lists.hpp"
 #include <string>
 using namespace std;
 
@@ -17,6 +18,7 @@ typedef struct student_data
 	string NRR;
 	string data_file;
 	string primary_key;
+	int label_line;
 	
 } student_data;
 
@@ -39,10 +41,6 @@ typedef struct label_id_index_list_node
 {
 
 	string primary_key;
-
-	// NRR in the data file
-
-	string NRR;
 	
 	// Next primary key in the label file
 	label_id_pointer next;
@@ -51,6 +49,9 @@ typedef struct label_id_index_list_node
 	label_id_pointer brother;
 
 	int id;
+
+	// Label line number in file 
+	int line_number;
 
 } label_id_index_list_node;
 
@@ -87,15 +88,13 @@ class inverted_list
 		void set_data_file_title(string file_name);
 		string get_data_file_title();
 
-		//int update_data();
+		secondary_key_index_list secondary_key_list;
+		label_id_index_list label_id_list;
 
 	private:
 		void create_inverted_list();
 		void delete_secondary_key_list(secondary_key_pointer node);
 		void delete_label_id_list(label_id_pointer node);
-
-		secondary_key_index_list secondary_key_list;		
-		label_id_index_list label_id_list;
 
 		// Indicates the data file name
 		string data_file = "none";
@@ -106,12 +105,7 @@ string primary_key_creator(string line, string line_ws);
 int file_header_creator (string file_name, string new_file_name);
 int secondary_index_files_creator(string file_name);
 string secondary_key_creator(string line, string secondary_key);
-
-
-
-
-
-
-
+void add_student (primary_list* prim_list, inverted_list* inv_list, string register_file);
+void remove_student (primary_list* prim_list, inverted_list* inv_list, string primary_key, string register_file);
 
 #endif 

@@ -61,6 +61,9 @@ class primary_list
 		// Indicates the data file name
 		string primary_index_file;
 
+		// Indicates the last line of the file stored
+		int last_line;
+
 	private:
 		void delete_list();
 };
