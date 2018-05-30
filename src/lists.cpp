@@ -15,6 +15,8 @@ primary_list::primary_list ()
 
 	primary_key_list.start->next = NULL;
 	primary_key_list.start->primary_key = "none";
+
+	last_line = 0;
 }
 
 primary_list::primary_list (string file_name)
@@ -28,6 +30,8 @@ primary_list::primary_list (string file_name)
 
 	primary_key_list.start->next = NULL;
 	primary_key_list.start->primary_key = "none";
+
+	last_line = 0;
 }
 
 primary_list::~primary_list ()
@@ -49,6 +53,13 @@ void primary_list::insert_data (string primary_key, int file_NRR)
 	primary_key_list.end->primary_key = primary_key;
 
 	primary_key_list.end->file_NRR = file_NRR;
+
+	// Updating the last_line
+
+	if(file_NRR > last_line)
+	{
+		last_line = file_NRR;
+	}
 }
 
 void primary_list::delete_list()

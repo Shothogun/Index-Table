@@ -248,7 +248,6 @@ void inverted_list_creator (inverted_list* list, string label_file, string secon
 	labels_index.open(label_file);
 	secondary_index.open(secondary_file);
 
-
 	// Secondary key
 
 	while(getline(secondary_index, tmp_secondary_key))

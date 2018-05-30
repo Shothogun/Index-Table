@@ -1,5 +1,5 @@
 #include "index.hpp"
-#include "lists.hpp"
+#include "IO.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -504,8 +504,6 @@ int file_header_creator (string file_name, string new_file_name)
 	// Identifies that the current line is a header
 	const char header_indicator = '#';
 
-	int counter;
-
 	ifstream database;
 	ofstream new_database;
 
@@ -523,13 +521,7 @@ int file_header_creator (string file_name, string new_file_name)
 	database.seekg(0, database.beg);
 
 	// Header
-	new_database << header_indicator;
-
-	for (counter = 0; counter < 3; counter++)
-	{
-		new_database << ' ';  
-	}
-	new_database << '\n';
+	new_database << header_indicator << "-01\n";
 
 	// Copy the registers to the other file
 	while(getline(database,tmp_register))
@@ -695,6 +687,74 @@ string secondary_key_creator(string line, string secondary_key)
 	{
 		secondary_key.push_back(line[counter]);
 	}
-	
+
 	return secondary_key;
+}
+
+void add_student (primary_list* prim_list, inverted_list* inv_list, string register_file)
+{
+	const int line_number_lenght = 3;
+	const int register_lenght = 62;
+
+	int counter;
+
+	student_data data;
+	string full_register;
+	string header;
+	string deleted;
+	string number;
+	string tmp_register;
+	char tmp_number [line_number_lenght];
+
+	int line_number;
+
+	fstream main_file;
+
+	main_file.open(register_file, ios::out | ios::in);
+
+	data = get_register(full_register);
+
+	getline(main_file, header);
+
+	main_file.seekp(0,main_file.end);
+
+	// PED
+	if (header[0] == '#' && header[1] != '-')
+	{
+		header.copy(tmp_number, line_number_lenght, 1);
+
+		for(counter = 0; counter < line_number_lenght; counter ++)
+		{
+			number += tmp_number[counter];
+		}
+
+		line_number = stoi(number);
+
+		main_file.seekg(line_number * register_lenght, main_file.beg);
+
+		getline(main_file, deleted);
+
+		deleted.copy(tmp_number, line_number_lenght, 1);
+		for(counter = 0; counter < line_number_lenght; counter ++)
+		{
+			number += tmp_number[counter];
+		}
+
+		main_file.seekp(0, main_file.beg);
+
+		main_file << number;
+
+		main_file.seekp(line_number * register_lenght, main_file.beg);
+	}
+
+	//getline(full_register, main_file);
+	main_file << full_register << '\n';
+
+	prim_list->insert_data(data.primary_key, prim_list->last_line + 1);
+
+	data.label_line = inv_list->label_id_list.total;
+
+	inv_list->insert_data(data);
+
+	main_file.close();
 }
