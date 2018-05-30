@@ -107,5 +107,5 @@ int secondary_index_files_creator(string file_name);
 string secondary_key_creator(string line, string secondary_key);
 void add_student (primary_list* prim_list, inverted_list* inv_list, string register_file);
 void remove_student (primary_list* prim_list, inverted_list* inv_list, string primary_key, string register_file);
-
+void merge_registers (primary_list* prim_list_1, primary_list* prim_list_2, string name_file1, string name_file2);
 #endif 
