@@ -732,3 +732,115 @@ void remove_student (primary_list* prim_list, inverted_list* inv_list, string pr
 
 	inv_list->remove_data(primary_key, secondary_key);
 }
+
+void merge_registers (primary_list* prim_list_1, primary_list* prim_list_2, string name_file1, string name_file2)
+{
+	const int header_lenght = 4;
+	const int register_lenght = 62;
+
+	string name = "registers_";
+	string identifier1 = name_file1;
+	string identifier2 = name_file2;
+	string extension = ".txt";
+
+	string tmp_register1;
+	string tmp_register2;
+
+	ifstream main_file1;
+	ifstream main_file2;
+	ofstream new_file;
+
+	main_file1.open(name_file1);
+	main_file2.open(name_file2);
+
+	uint counter=0;
+	int finish = 0;
+	int position;
+
+	// Get the last character of the name, without the extension of normaly 4 characters
+	while (counter < 4)
+	{
+		identifier1.pop_back();
+
+		counter ++;
+	}
+	identifier1 = identifier1.back();
+
+	counter = 0;
+	while (counter < 4)
+	{
+		identifier2.pop_back();
+
+		counter ++;
+	}
+	identifier2 = identifier2.back();
+
+	name +=identifier1 + identifier2 + extension;
+
+	new_file.open(name, ios::out | ios::trunc);
+
+	prim_list_1->primary_key_list.current = prim_list_1->primary_key_list.start->next;
+	prim_list_2->primary_key_list.current = prim_list_2->primary_key_list.start->next;
+
+	while(finish == 0)
+	{
+		finish=0;
+
+		if (prim_list_1->primary_key_list.current == NULL)
+		{
+			while (prim_list_2->primary_key_list.current != NULL)
+			{
+				position = prim_list_2->primary_key_list.current->file_NRR;
+				main_file2.seekg((header_lenght+1) + ((position-1) * (register_lenght+2)), main_file2.beg);
+				getline(main_file2, tmp_register2);
+				new_file << tmp_register2 << "\n";
+				finish = 1;
+
+				prim_list_2->primary_key_list.current = prim_list_2->primary_key_list.current->next;
+			}
+		}
+		else if (prim_list_2->primary_key_list.current == NULL)
+		{
+			while (prim_list_1->primary_key_list.current != NULL)
+			{
+				position = prim_list_1->primary_key_list.current->file_NRR;
+				main_file1.seekg((header_lenght+1) + ((position-1) * (register_lenght+2)), main_file1.beg);
+				getline(main_file1, tmp_register1);
+				new_file << tmp_register1 << "\n";
+				finish = 1;
+
+				prim_list_1->primary_key_list.current = prim_list_1->primary_key_list.current->next;
+			}
+		}
+		else 
+		{
+			position = prim_list_1->primary_key_list.current->file_NRR;
+			main_file1.seekg((header_lenght+1) + ((position-1) * (register_lenght+2)), main_file1.beg);
+			getline(main_file1, tmp_register1);
+			position = prim_list_2->primary_key_list.current->file_NRR;
+			main_file2.seekg((header_lenght+1) + ((position-1) * (register_lenght+2)), main_file2.beg);
+			getline(main_file2, tmp_register2);
+
+			if (tmp_register1.compare(tmp_register2) < 0)
+			{
+				prim_list_1->primary_key_list.current = prim_list_1->primary_key_list.current->next;
+				new_file << tmp_register1 << "\n";	
+			}
+			else if (tmp_register1.compare(tmp_register2) > 0)
+			{
+				prim_list_2->primary_key_list.current = prim_list_2->primary_key_list.current->next;
+				new_file << tmp_register2 << "\n";
+			}
+			else
+			{
+				prim_list_1->primary_key_list.current = prim_list_1->primary_key_list.current->next;
+				prim_list_2->primary_key_list.current = prim_list_2->primary_key_list.current->next;
+				new_file << tmp_register2 << "\n";
+			}
+		}
+	}
+
+	main_file1.close();
+	main_file2.close();
+	new_file.close();
+}
