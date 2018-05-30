@@ -1,6 +1,7 @@
 #ifndef INDEX_HPP
 #define INDEX_HPP
 
+#include "lists.hpp"
 #include <string>
 using namespace std;
 
@@ -88,14 +89,12 @@ class inverted_list
 		string get_data_file_title();
 
 		secondary_key_index_list secondary_key_list;
-		//int update_data();
+		label_id_index_list label_id_list;
 
 	private:
 		void create_inverted_list();
 		void delete_secondary_key_list(secondary_key_pointer node);
 		void delete_label_id_list(label_id_pointer node);
-		
-		label_id_index_list label_id_list;
 
 		// Indicates the data file name
 		string data_file = "none";
@@ -106,12 +105,6 @@ string primary_key_creator(string line, string line_ws);
 int file_header_creator (string file_name, string new_file_name);
 int secondary_index_files_creator(string file_name);
 string secondary_key_creator(string line, string secondary_key);
-
-
-
-
-
-
-
+void add_student (primary_list* prim_list, inverted_list* inv_list, string register_file);
 
 #endif 
